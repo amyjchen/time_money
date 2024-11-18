@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+const defaultTheme = require('tailwindcss/defaultTheme');
 
 export default {
   content: [
@@ -7,6 +8,10 @@ export default {
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
+    fontFamily: {
+      'sans': ['adaptive-mono', ...defaultTheme.fontFamily.sans],
+      'heading': ['adaptive-mono', ...defaultTheme.fontFamily.sans],
+    },
     extend: {
       colors: {
         background: "var(--background)",
