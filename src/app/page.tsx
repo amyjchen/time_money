@@ -66,8 +66,10 @@ export default function Home() {
   const [salary, setSalary] = React.useState(0);
   const [startTime, setStartTime] = React.useState('09:00');
   const [endTime, setEndTime] = React.useState('17:00');
-  const minutes = getTotalMinutesInRange(startTime, endTime)
 
+  const [collapsed, setCollapsed] = React.useState(false)
+
+  const minutes = getTotalMinutesInRange(startTime, endTime)
   const dailySalary = getSalaryPerDay(salary)
   const minuteSalary = getSalaryPerMinute(salary, minutes);
 
@@ -84,21 +86,26 @@ export default function Home() {
 
   return (
     <main className='h-screen'>
-      <div className="p-8 flex flex-col gap-6 h-full">
-        <div className='flex gap-2'>
-          <label >Start Time</label>
-          <input className="text-black outline-gray-400 outline outline-1 rounded-sm" type="time" value={startTime} max={endTime} onChange={(e) => setStartTime(e.target.value)} />
-          <label >End Time</label>
-          <input className="text-black outline-gray-400 outline outline-1 rounded-sm" type="time" value={endTime} min={startTime} onChange={(e) => setEndTime(e.target.value)} />
-        </div>
-        <div className='flex flex-col gap-1'>
+      <div className="p-8 flex flex-col h-full">
+        <button aria-label={collapsed ? 'expand' : 'collapse'} className='btn hover:opacity-100 transition-all w-full opacity-15' onClick={() => setCollapsed((prev) => !prev)}>
+          {collapsed ? '↓' : '↑'}
+        </button>
+        {!collapsed && <div className='flex  flex-col gap-2'>
           <div className='flex gap-2'>
-            <label>Salary/year</label>
-            <input className="text-black outline-gray-400 outline outline-1 rounded-sm" value={salary.toString()} onChange={(e) => e.target.value === '' ? setSalary(0) : setSalary(parseFloat(e.target.value))} type="number" />
+            <label >Start Time</label>
+            <input className="text-black outline-gray-400 outline outline-1 rounded-sm" type="time" value={startTime} max={endTime} onChange={(e) => setStartTime(e.target.value)} />
+            <label >End Time</label>
+            <input className="text-black outline-gray-400 outline outline-1 rounded-sm" type="time" value={endTime} min={startTime} onChange={(e) => setEndTime(e.target.value)} />
           </div>
-          <p>Salary/day: {dailySalary}</p>
-          <p>Salary/minute: {minuteSalary}</p>
-        </div>
+          <div className='flex flex-col gap-1'>
+            <div className='flex gap-2'>
+              <label>Salary/year</label>
+              <input className="text-black outline-gray-400 outline outline-1 rounded-sm" value={salary.toString()} onChange={(e) => e.target.value === '' ? setSalary(0) : setSalary(parseFloat(e.target.value))} type="number" />
+            </div>
+            <p>Salary/day: {dailySalary}</p>
+            <p>Salary/minute: {minuteSalary}</p>
+          </div>
+        </div>}
         <CurrentIncome salary={salary} minutes={minutes} startTime={startTime} endTime={endTime} />
       </div>
 
