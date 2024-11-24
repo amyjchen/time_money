@@ -25,9 +25,10 @@ interface CurrentIncomeProps {
   salary: number;
   minutes: number;
   startTime: string;
+  endTime: string;
 }
 
-function CurrentIncome({ salary, minutes, startTime }: CurrentIncomeProps) {
+function CurrentIncome({ salary, minutes, startTime, endTime }: CurrentIncomeProps) {
   const [time, setTime] = React.useState(new Date());
   React.useEffect(() => {
     const clockInterval = setInterval(() => setTime(new Date()), 1000);
@@ -43,17 +44,19 @@ function CurrentIncome({ salary, minutes, startTime }: CurrentIncomeProps) {
   const currentIncome = new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD', maximumFractionDigits: 2 }).format(numbericCurrentIncome)
   const tz = Intl.DateTimeFormat().resolvedOptions().timeZone
 
+  const isWeekend = time.getDay() % 6 === 0;
+  const pastEndTime = minutesSinceStart > getTotalMinutesInRange(startTime, endTime);
   return (
     <>
       <div className='flex flex-grow items-center justify-center space-between'>
         <div className='text-center'>
           <div className='text-8xl'>
-            {currentIncome}
+            {isWeekend ? 'It\'s the weekend.' : currentIncome}
           </div>
-          {time.toLocaleTimeString()} {tz}
+          <p>{(isWeekend || pastEndTime) && 'You\'re not a charity, stop working.\n'}</p>
+          <p>{time.toLocaleTimeString()} {tz}</p>
         </div>
       </div>
-
     </>
   )
 }
@@ -67,7 +70,6 @@ export default function Home() {
 
   const dailySalary = getSalaryPerDay(salary)
   const minuteSalary = getSalaryPerMinute(salary, minutes);
-
 
   // TODO:
   // properly update start/end times if breaches min/max
@@ -85,20 +87,19 @@ export default function Home() {
       <div className="p-8 flex flex-col gap-6 h-full">
         <div className='flex gap-2'>
           <label >Start Time</label>
-          <input className="text-black" type="time" value={startTime} max={endTime} onChange={(e) => setStartTime(e.target.value)} />
+          <input className="text-black outline-gray-400 outline outline-1 rounded-sm" type="time" value={startTime} max={endTime} onChange={(e) => setStartTime(e.target.value)} />
           <label >End Time</label>
-          <input className="text-black" type="time" value={endTime} min={startTime} onChange={(e) => setEndTime(e.target.value)} />
+          <input className="text-black outline-gray-400 outline outline-1 rounded-sm" type="time" value={endTime} min={startTime} onChange={(e) => setEndTime(e.target.value)} />
         </div>
         <div className='flex flex-col gap-1'>
           <div className='flex gap-2'>
             <label>Salary/year</label>
-            <input className="text-black" value={salary.toString()} onChange={(e) => e.target.value === '' ? setSalary(0) : setSalary(parseFloat(e.target.value))} type="number" />
+            <input className="text-black outline-gray-400 outline outline-1 rounded-sm" value={salary.toString()} onChange={(e) => e.target.value === '' ? setSalary(0) : setSalary(parseFloat(e.target.value))} type="number" />
           </div>
           <p>Salary/day: {dailySalary}</p>
           <p>Salary/minute: {minuteSalary}</p>
         </div>
-
-        <CurrentIncome salary={salary} minutes={minutes} startTime={startTime} />
+        <CurrentIncome salary={salary} minutes={minutes} startTime={startTime} endTime={endTime} />
       </div>
 
     </main >
